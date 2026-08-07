@@ -16,11 +16,11 @@ async function refreshStatus(showToast = false) {
   try {
     status.value = await moduleApi.getStatus()
     refreshedAt.value = new Date().toLocaleTimeString()
-    if (showToast) showSnackbar('状态已刷新')
+    if (showToast) showSnackbar({ message: '状态已刷新', withDismissAction: true })
   } catch (err) {
     console.error(err)
     error.value = err?.message || '状态读取失败'
-    if (showToast) showSnackbar(error.value)
+    if (showToast) showSnackbar({ message: error.value, withDismissAction: true })
   } finally {
     loading.value = false
   }
@@ -34,16 +34,16 @@ async function runAction(name, fn) {
     lastOutput.value = result.stdout
     if (!result.ok) {
       error.value = result.stderr || result.stdout || '命令执行失败'
-      showSnackbar(error.value)
+      showSnackbar({ message: error.value, withDismissAction: true })
       return false
     }
-    showSnackbar('操作完成')
+    showSnackbar({ message: '操作完成', withDismissAction: true })
     await refreshStatus(false)
     return true
   } catch (err) {
     console.error(err)
     error.value = err?.message || '操作失败'
-    showSnackbar(error.value)
+    showSnackbar({ message: error.value, withDismissAction: true })
     return false
   } finally {
     busy.value = false
