@@ -69,7 +69,7 @@ onBeforeUnmount(() => {
   <div class="app">
     <!-- 固定顶栏：不随内容滚动，主标题固定应用名，当前 tab 名放副标题。
          主题切换在配置页，顶栏不保留切换按钮。 -->
-    <MiuixTopAppBar class="app__topbar" title="Sub-Store for Android" :subtitle="activeTitle" />
+    <MiuixTopAppBar class="app__topbar" title="Sub-Store for Android" />
 
     <!-- 内容区：4 个 tab 页面（概览/更新/配置/关于），内部滚动。 -->
     <MiuixScrollArea ref="scrollerRef" class="app__body">
