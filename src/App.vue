@@ -14,6 +14,10 @@ import OverviewPage from './pages/OverviewPage.vue'
 import UpdatesPage from './pages/UpdatesPage.vue'
 import SettingsPage from './pages/SettingsPage.vue'
 import AboutPage from './pages/AboutPage.vue'
+import { MODULE_VERSION } from './api/module'
+
+// 顶栏副标题：模块版本号（module.prop 的 version）
+const subtitle = MODULE_VERSION ? `v${MODULE_VERSION}` : ''
 
 const pages = [OverviewPage, UpdatesPage, SettingsPage, AboutPage]
 const titles = ['概览', '更新', '配置', '关于']
@@ -69,7 +73,7 @@ onBeforeUnmount(() => {
   <div class="app">
     <!-- 固定顶栏：不随内容滚动，主标题固定应用名，当前 tab 名放副标题。
          主题切换在配置页，顶栏不保留切换按钮。 -->
-    <MiuixTopAppBar class="app__topbar" title="Sub-Store for Android" />
+    <MiuixTopAppBar class="app__topbar" title="Sub-Store for Android" :subtitle="subtitle" />
 
     <!-- 内容区：4 个 tab 页面（概览/更新/配置/关于），内部滚动。 -->
     <MiuixScrollArea ref="scrollerRef" class="app__body">

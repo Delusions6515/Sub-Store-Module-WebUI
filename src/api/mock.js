@@ -1,6 +1,11 @@
 // 开发环境 mock：浏览器里没有 ksu 全局对象，这里模拟 kernelsu.exec
 // 数据与真实 webui.sh status 输出对齐，方便在电脑上调试 UI
 
+// 模拟 module.prop 的 version，供顶栏副标题预览
+const MOCK_MODULE_VERSION = '2.0.1 (Browser Dev)'
+
+export { MOCK_MODULE_VERSION }
+
 const MOCK_STATUS = {
   serviceRunning: true,
   autostart: true,

@@ -1,12 +1,26 @@
-import { exec } from 'kernelsu'
-import { mockExec } from './mock'
+import { exec, moduleInfo } from 'kernelsu'
+import { mockExec, MOCK_MODULE_VERSION } from './mock'
 
-// 模块内 webui.sh 的固定路径
-// 以后如果要从 kernelsu.moduleInfo() 动态取路径，只改这里
-export const WEBUI_SCRIPT = '/data/adb/modules/sub_store/scripts/webui.sh'
-
-// 浏览器开发环境没有 ksu 全局对象，走 mock，方便 pnpm dev 在电脑上预览
+// 浏览器开发环境没有 ksu 全局对象，走 mock，方便 pnpm dev 预览
 const isBrowserDev = typeof window !== 'undefined' && !window.ksu
+
+// moduleInfo() 返回 module.prop 全字段 + moduleDir，模块加载时取一次
+const moduleInfoData = isBrowserDev
+  ? { version: MOCK_MODULE_VERSION }
+  : (() => {
+      try {
+        return JSON.parse(moduleInfo())
+      } catch {
+        return null
+      }
+    })()
+
+// 模块内 webui.sh 的路径：优先从 KernelSU 动态取，取不到再 fallback
+export const MODULE_PATH = moduleInfoData?.moduleDir || '/data/adb/modules/sub_store'
+export const WEBUI_SCRIPT = `${MODULE_PATH}/scripts/webui.sh`
+
+// 模块版本（module.prop 的 version 字段），供顶栏副标题等展示
+export const MODULE_VERSION = moduleInfoData?.version || ''
 
 async function runExec(command, options) {
   if (isBrowserDev) {
