@@ -67,36 +67,44 @@ const pendingAction = ref(false)
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms))
 
-async function pollUntil(pred, timeoutMs, intervalMs = 600) {
+async function pollUntil(pred, timeoutMs, intervalMs = 600, onPoll) {
   const deadline = Date.now() + timeoutMs
   while (Date.now() < deadline) {
     await refreshStatus(false)
+    if (onPoll) await onPoll()
     if (pred()) return
     await sleep(intervalMs)
   }
 }
 
-async function pollServiceState(name) {
+async function pollServiceState(name, onPoll) {
   if (name === 'restart') {
     // 先等 stop 生效（变 false），再等启动完成（true）
-    await pollUntil(() => status.value?.serviceRunning === false, 6000)
-    await pollUntil(() => status.value?.serviceRunning === true, 15000)
+    await pollUntil(() => status.value?.serviceRunning === false, 6000, 600, onPoll)
+    await pollUntil(() => status.value?.serviceRunning === true, 15000, 600, onPoll)
   } else if (name === 'start') {
-    await pollUntil(() => status.value?.serviceRunning === true, 12000)
+    await pollUntil(() => status.value?.serviceRunning === true, 12000, 600, onPoll)
   } else {
-    await pollUntil(() => status.value?.serviceRunning === false, 10000)
+    await pollUntil(() => status.value?.serviceRunning === false, 10000, 600, onPoll)
   }
 }
 
 async function handleServiceAction(name) {
   currentAction.value = name
   pendingAction.value = true
+  visible.value = true
+  content.value = '正在执行，等待输出…'
   try {
     // 1. 后台触发（内部先归档旧日志，新 run.log 只含本次输出；exec 立即返回）
     const result = await moduleApi.runBackground(name)
     if (!result.ok) throw new Error(result.stderr || '指令发送失败')
-    // 2. 轮询服务状态至操作完成（浏览器 dev 环境跳过）
-    if (!moduleApi.isBrowserDev) await pollServiceState(name)
+    // 2. 轮询服务状态至操作完成（浏览器 dev 环境跳过），期间伪实时刷新日志
+    if (!moduleApi.isBrowserDev) {
+      await pollServiceState(name, async () => {
+        const log = await moduleApi.getLog().catch(() => '')
+        if (log) content.value = log
+      })
+    }
     // 3. 读取本次操作的日志
     content.value = await moduleApi.getLog().catch(() => '')
     visible.value = true

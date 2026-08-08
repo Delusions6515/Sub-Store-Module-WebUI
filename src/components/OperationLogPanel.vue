@@ -1,13 +1,16 @@
 <script setup>
 // 操作日志展示：标题 + 卡片 + 行渲染，行色按日志级别。
 // 供概览页（服务控制）与更新页（更新）复用；两页各自的完成判定/轮询逻辑留在页内。
+import { ref, watch } from 'vue'
 import { MiuixCard, MiuixSmallTitle } from 'miuix-vue'
 
-defineProps({
+const props = defineProps({
   visible: { type: Boolean, default: false },
   content: { type: String, default: '' },
   title: { type: String, required: true },
 })
+
+const boxRef = ref(null)
 
 function logLineClass(line) {
   if (/\[Error\]/.test(line)) return 'log-line--error'
@@ -15,12 +18,23 @@ function logLineClass(line) {
   if (/\[Info\]/.test(line)) return 'log-line--info'
   return ''
 }
+
+// 日志增长时跟随到底部（用户已滚回上方则不打断），伪实时刷新时最新输出始终可见。
+watch(
+  () => props.content,
+  () => {
+    const box = boxRef.value
+    if (box && box.scrollHeight - box.scrollTop - box.clientHeight < 40) {
+      box.scrollTop = box.scrollHeight
+    }
+  },
+)
 </script>
 
 <template>
   <MiuixSmallTitle v-if="visible && content" :text="title" />
   <MiuixCard v-if="visible && content" class="ex-card ex-card--pad">
-    <div class="log-box">
+    <div ref="boxRef" class="log-box">
       <div
         v-for="(line, i) in content.split('\n')"
         :key="i"

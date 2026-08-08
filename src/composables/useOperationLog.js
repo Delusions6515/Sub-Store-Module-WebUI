@@ -10,8 +10,9 @@ export function useOperationLog() {
 
   const sleep = (ms) => new Promise((r) => setTimeout(r, ms))
 
-  // 轮询 run.log 字节数，连续 stableTimes 次无增长视为完成
-  async function pollUntilIdle(timeoutMs, intervalMs = 2000, stableTimes = 3) {
+  // 轮询 run.log 字节数，连续 stableTimes 次无增长视为完成；
+  // onPoll 在每次轮询时调用（伪实时刷新日志内容用）
+  async function pollUntilIdle(timeoutMs, onPoll, intervalMs = 1000, stableTimes = 3) {
     const deadline = Date.now() + timeoutMs
     let stable = 0
     let lastSize = -1
@@ -24,12 +25,14 @@ export function useOperationLog() {
         stable = 0
       }
       lastSize = size
+      if (onPoll) await onPoll()
       await sleep(intervalMs)
     }
     return false
   }
 
-  // 执行命令并展示其日志：内部先归档旧日志，新 run.log 只含本次输出
+  // 执行命令并展示其日志：内部先归档旧日志，新 run.log 只含本次输出；
+  // 执行期间轮询伪实时刷新日志内容，结束后再读一次完整日志
   async function runWithLog(name, { timeoutMs = 600000 } = {}) {
     visible.value = true
     content.value = '正在执行，等待输出…'
@@ -40,7 +43,13 @@ export function useOperationLog() {
         content.value = result.stderr || '指令发送失败'
         return false
       }
-      if (!moduleApi.isBrowserDev) await pollUntilIdle(timeoutMs)
+      if (!moduleApi.isBrowserDev) {
+        // 伪实时：执行期间每次轮询都刷新日志内容（空日志保持占位符，避免面板闪空）
+        await pollUntilIdle(timeoutMs, async () => {
+          const log = await moduleApi.getLog().catch(() => '')
+          if (log) content.value = log
+        })
+      }
       content.value = await moduleApi.getLog().catch(() => content.value)
       return true
     } catch (err) {
