@@ -16,6 +16,7 @@ const MOCK_STATUS = {
   backUrl: 'http://127.0.0.1:3001?api=http://127.0.0.1:3001/AbCdEfGhIjKlMnOpQrStUv',
   openUrl: 'http://127.0.0.1:3001?api=http://127.0.0.1:3001/AbCdEfGhIjKlMnOpQrStUv',
   backendPathIsDefault: true,
+  runUserIsRoot: true,
 }
 
 const MOCK_OUTPUT = {
