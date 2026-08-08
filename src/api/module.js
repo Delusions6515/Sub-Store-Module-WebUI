@@ -2,7 +2,7 @@ import { exec, moduleInfo } from 'kernelsu'
 import { mockExec, MOCK_MODULE_VERSION } from './mock'
 
 // 浏览器开发环境没有 ksu 全局对象，使用 mock 实现（pnpm dev 本地预览）
-const isBrowserDev = typeof window !== 'undefined' && !window.ksu
+export const isBrowserDev = typeof window !== 'undefined' && !window.ksu
 
 // moduleInfo() 返回 module.prop 全字段 + moduleDir，模块加载时取一次
 const moduleInfoData = isBrowserDev
@@ -56,16 +56,10 @@ export async function getLog() {
   return result.ok ? result.stdout : result.stderr || result.stdout
 }
 
-export async function startService() {
-  return runModuleCommand(`sh ${WEBUI_SCRIPT} start`)
-}
-
-export async function stopService() {
-  return runModuleCommand(`sh ${WEBUI_SCRIPT} stop`)
-}
-
-export async function restartService() {
-  return runModuleCommand(`sh ${WEBUI_SCRIPT} restart`)
+// 服务控制：nohup 后台执行并立即返回（输出由 webui.sh 追写进 run.log），避免 exec 等待命令完成卡住 UI
+// 返回后需轮询状态确认操作生效，再读取 run.log 展示结果
+export async function runServiceAction(name) {
+  return runModuleCommand(`nohup sh ${WEBUI_SCRIPT} ${name} >/dev/null 2>&1 &`)
 }
 
 export async function toggleAutostart() {

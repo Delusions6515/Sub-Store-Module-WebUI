@@ -1,11 +1,11 @@
 <script setup>
 // 概览页：状态卡片 / 地址 / 安全建议 / 服务控制 / 操作日志。
 import { computed, onMounted, ref } from 'vue'
-import { MiuixCard, MiuixText, MiuixButton, MiuixSmallTitle } from 'miuix-vue'
+import { MiuixCard, MiuixText, MiuixButton, MiuixSmallTitle, showSnackbar } from 'miuix-vue'
 import { useModuleState } from '../composables/useModuleState'
 import * as moduleApi from '../api/module'
 
-const { status, busy, error, refreshStatus, runAction, lastOutput } = useModuleState()
+const { status, busy, error, refreshStatus, runAction } = useModuleState()
 
 onMounted(() => {
   refreshStatus(false)
@@ -57,21 +57,54 @@ function handleOpen() {
   }
 }
 
-// 服务控制：命令输出与 run.log 尾部合并展示，仅点击操作后出现
+// 服务控制：nohup 后台执行立即返回，轮询状态至操作完成，再展示 run.log
 const actionLog = ref('')
 const showLog = ref(false)
 const currentAction = ref('')
+const pendingAction = ref(false)
 
-async function handleServiceAction(name, fn) {
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms))
+
+async function pollUntil(pred, timeoutMs, intervalMs = 600) {
+  const deadline = Date.now() + timeoutMs
+  while (Date.now() < deadline) {
+    await refreshStatus(false)
+    if (pred()) return
+    await sleep(intervalMs)
+  }
+}
+
+async function pollServiceState(name) {
+  if (name === 'restart') {
+    // 先等 stop 生效（变 false），再等启动完成（true）
+    await pollUntil(() => status.value?.serviceRunning === false, 6000)
+    await pollUntil(() => status.value?.serviceRunning === true, 15000)
+  } else if (name === 'start') {
+    await pollUntil(() => status.value?.serviceRunning === true, 12000)
+  } else {
+    await pollUntil(() => status.value?.serviceRunning === false, 10000)
+  }
+}
+
+async function handleServiceAction(name) {
   currentAction.value = name
-  // 命令含进程等待（stop 2s / restart 4s+），设 15s 超时避免界面长时间无响应
-  const ok = await runAction(name, fn, { timeout: 15000 })
-  const output = lastOutput.value.trim()
-  const log = await moduleApi.getLog().catch(() => '')
-  // 命令输出在前（本次操作反馈），run.log 尾部在后（历史操作日志）
-  actionLog.value = ok && output ? `${output}\n${log}` : log
-  showLog.value = true
-  currentAction.value = ''
+  pendingAction.value = true
+  try {
+    // 1. 后台触发命令（立即返回，不阻塞 UI）
+    const result = await moduleApi.runServiceAction(name)
+    if (!result.ok) throw new Error(result.stderr || '指令发送失败')
+    // 2. 轮询服务状态至操作完成（浏览器 dev 环境跳过）
+    if (!moduleApi.isBrowserDev) await pollServiceState(name)
+    // 3. 读取 run.log 展示（含本次操作输出与历史日志）
+    actionLog.value = await moduleApi.getLog().catch(() => '')
+    showLog.value = true
+  } catch (err) {
+    error.value = err?.message || '操作失败'
+    showSnackbar({ message: error.value, withDismissAction: true })
+  } finally {
+    pendingAction.value = false
+    currentAction.value = ''
+  }
 }
 
 function logLineClass(line) {
@@ -148,19 +181,19 @@ const securityIssues = computed(() => {
       <div class="control-row">
         <MiuixButton
           type="secondary"
-          :disabled="busy || status?.serviceRunning"
-          @click="handleServiceAction('start', () => moduleApi.startService())"
-        >{{ busy && currentAction === 'start' ? '执行中…' : '启动' }}</MiuixButton>
+          :disabled="pendingAction || status?.serviceRunning"
+          @click="handleServiceAction('start')"
+        >{{ pendingAction && currentAction === 'start' ? '执行中…' : '启动' }}</MiuixButton>
         <MiuixButton
           type="secondary"
-          :disabled="busy || !status?.serviceRunning"
-          @click="handleServiceAction('stop', () => moduleApi.stopService())"
-        >{{ busy && currentAction === 'stop' ? '执行中…' : '停止' }}</MiuixButton>
+          :disabled="pendingAction || !status?.serviceRunning"
+          @click="handleServiceAction('stop')"
+        >{{ pendingAction && currentAction === 'stop' ? '执行中…' : '停止' }}</MiuixButton>
         <MiuixButton
           type="primary"
-          :disabled="busy"
-          @click="handleServiceAction('restart', () => moduleApi.restartService())"
-        >{{ busy && currentAction === 'restart' ? '执行中…' : '重启' }}</MiuixButton>
+          :disabled="pendingAction"
+          @click="handleServiceAction('restart')"
+        >{{ pendingAction && currentAction === 'restart' ? '执行中…' : '重启' }}</MiuixButton>
       </div>
     </MiuixCard>
 
