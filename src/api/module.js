@@ -56,10 +56,8 @@ export async function getLog() {
   return result.ok ? result.stdout : result.stderr || result.stdout
 }
 
-// 服务控制：先归档操作日志（run.log → .bak），再 nohup 后台执行并立即返回
-// 归档后新 run.log 只含本次操作输出，直接读取即可，不受历史日志/轮转影响
+// 服务控制：nohup 后台执行并立即返回（webui.sh 内部先轮转 run.log，新文件只含本次操作输出）
 export async function runServiceAction(name) {
-  await runModuleCommand(`sh ${WEBUI_SCRIPT} log-reset`)
   return runModuleCommand(`nohup sh ${WEBUI_SCRIPT} ${name} >/dev/null 2>&1 &`)
 }
 
