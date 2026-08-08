@@ -26,11 +26,22 @@ async function refreshStatus(showToast = false) {
   }
 }
 
-async function runAction(name, fn) {
+// 可选超时：防止 exec 底层异常挂起时 busy 状态无法恢复。
+// 默认不限时（更新类操作耗时可达数分钟），由调用方按需传入。
+async function runAction(name, fn, { timeout = 0 } = {}) {
   busy.value = true
   error.value = ''
+  let timer = null
   try {
-    const result = await fn()
+    const run = timeout
+      ? Promise.race([
+          fn(),
+          new Promise((_, reject) => {
+            timer = setTimeout(() => reject(new Error('操作超时, 请稍后重试')), timeout)
+          }),
+        ])
+      : fn()
+    const result = await run
     lastOutput.value = result.stdout
     if (!result.ok) {
       error.value = result.stderr || result.stdout || '命令执行失败'
@@ -46,6 +57,7 @@ async function runAction(name, fn) {
     showSnackbar({ message: error.value, withDismissAction: true })
     return false
   } finally {
+    clearTimeout(timer)
     busy.value = false
   }
 }

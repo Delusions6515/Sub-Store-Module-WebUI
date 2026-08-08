@@ -1,11 +1,11 @@
 <script setup>
-// 概览页：状态卡片 / 地址 / 安全建议 / 服务控制。
-import { computed, onMounted } from 'vue'
+// 概览页：状态卡片 / 地址 / 安全建议 / 服务控制 / 操作日志。
+import { computed, onMounted, ref } from 'vue'
 import { MiuixCard, MiuixText, MiuixButton, MiuixSmallTitle } from 'miuix-vue'
 import { useModuleState } from '../composables/useModuleState'
 import * as moduleApi from '../api/module'
 
-const { status, busy, error, refreshStatus, runAction } = useModuleState()
+const { status, busy, error, refreshStatus, runAction, lastOutput } = useModuleState()
 
 onMounted(() => {
   refreshStatus(false)
@@ -55,6 +55,30 @@ function handleOpen() {
   if (status.value?.openUrl) {
     runAction('open', () => moduleApi.openUrl(status.value.openUrl))
   }
+}
+
+// 服务控制：命令输出与 run.log 尾部合并展示，仅点击操作后出现
+const actionLog = ref('')
+const showLog = ref(false)
+const currentAction = ref('')
+
+async function handleServiceAction(name, fn) {
+  currentAction.value = name
+  // 命令含进程等待（stop 2s / restart 4s+），设 15s 超时避免界面长时间无响应
+  const ok = await runAction(name, fn, { timeout: 15000 })
+  const output = lastOutput.value.trim()
+  const log = await moduleApi.getLog().catch(() => '')
+  // 命令输出在前（本次操作反馈），run.log 尾部在后（历史操作日志）
+  actionLog.value = ok && output ? `${output}\n${log}` : log
+  showLog.value = true
+  currentAction.value = ''
+}
+
+function logLineClass(line) {
+  if (/\[Error\]/.test(line)) return 'log-line--error'
+  if (/\[Warn\]/.test(line)) return 'log-line--warn'
+  if (/\[Info\]/.test(line)) return 'log-line--info'
+  return ''
 }
 
 // 安全问题列表：每条自带标题与描述，新增类型只需往数组里 push
@@ -125,18 +149,30 @@ const securityIssues = computed(() => {
         <MiuixButton
           type="secondary"
           :disabled="busy || status?.serviceRunning"
-          @click="runAction('start', () => moduleApi.startService())"
-        >启动</MiuixButton>
+          @click="handleServiceAction('start', () => moduleApi.startService())"
+        >{{ busy && currentAction === 'start' ? '执行中…' : '启动' }}</MiuixButton>
         <MiuixButton
           type="secondary"
           :disabled="busy || !status?.serviceRunning"
-          @click="runAction('stop', () => moduleApi.stopService())"
-        >停止</MiuixButton>
+          @click="handleServiceAction('stop', () => moduleApi.stopService())"
+        >{{ busy && currentAction === 'stop' ? '执行中…' : '停止' }}</MiuixButton>
         <MiuixButton
           type="primary"
           :disabled="busy"
-          @click="runAction('restart', () => moduleApi.restartService())"
-        >重启</MiuixButton>
+          @click="handleServiceAction('restart', () => moduleApi.restartService())"
+        >{{ busy && currentAction === 'restart' ? '执行中…' : '重启' }}</MiuixButton>
+      </div>
+    </MiuixCard>
+
+    <MiuixSmallTitle v-if="showLog && actionLog" text="操作日志" />
+    <MiuixCard v-if="showLog && actionLog" class="ex-card ex-card--pad">
+      <div class="log-box">
+        <div
+          v-for="(line, i) in actionLog.split('\n')"
+          :key="i"
+          class="log-line"
+          :class="logLineClass(line)"
+        >{{ line || ' ' }}</div>
       </div>
     </MiuixCard>
 
@@ -148,6 +184,12 @@ const securityIssues = computed(() => {
 
 <style lang="scss">
 .page {
+  // 语义色调：库 token 只覆盖 主色(蓝)/错误(红)，绿/橙没有现成语义 token，
+  // 用 miuix 色板近似值（example 下拉示例的 #36D167 绿 / #FFB21D 黄）定义成
+  // 带语义名的页面级变量，状态卡片与操作日志共用，便于日后统一换 token。
+  --tone-success: #36d167;
+  --tone-warning: #ffb21d;
+
   // 底部 12dp 空隙（底栏在滚动区外，无需 nav-bar inset）。用 padding 而非 margin，
   // 因为滚动容器可靠地包含内容 padding 进滚动高度，却可能裁掉最后一个子元素的 margin。
   padding-bottom: 12px;
@@ -172,12 +214,6 @@ const securityIssues = computed(() => {
 }
 
 .status-cell {
-  // 语义色调：库 token 只覆盖 主色(蓝)/错误(红)，绿/橙没有现成语义 token，
-  // 用 miuix 色板近似值（example 下拉示例的 #36D167 绿 / #FFB21D 黄）定义成
-  // 带语义名的局部变量，集中管理、便于日后统一换 token。
-  --tone-success: #36d167;
-  --tone-warning: #ffb21d;
-
   display: grid;
   gap: 2px;
 
@@ -218,6 +254,28 @@ const securityIssues = computed(() => {
 .control-row {
   display: flex;
   gap: 12px;
+}
+
+// 操作日志：等宽字体、限高滚动，行色按日志级别
+.log-box {
+  max-height: 240px;
+  overflow-y: auto;
+  font-family: 'JetBrains Mono', 'Cascadia Mono', Menlo, Consolas, monospace;
+  font-size: 12px;
+  line-height: 1.6;
+  word-break: break-all;
+}
+
+.log-line {
+  &--info {
+    color: var(--tone-success);
+  }
+  &--warn {
+    color: var(--tone-warning);
+  }
+  &--error {
+    color: var(--m-color-error);
+  }
 }
 
 .ex-error {

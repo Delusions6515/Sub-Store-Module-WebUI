@@ -1,7 +1,7 @@
 import { exec, moduleInfo } from 'kernelsu'
 import { mockExec, MOCK_MODULE_VERSION } from './mock'
 
-// 浏览器开发环境没有 ksu 全局对象，走 mock，方便 pnpm dev 预览
+// 浏览器开发环境没有 ksu 全局对象，使用 mock 实现（pnpm dev 本地预览）
 const isBrowserDev = typeof window !== 'undefined' && !window.ksu
 
 // moduleInfo() 返回 module.prop 全字段 + moduleDir，模块加载时取一次
@@ -48,6 +48,12 @@ export async function getStatus() {
     throw new Error(result.stderr || result.stdout || '读取状态失败')
   }
   return JSON.parse(result.stdout)
+}
+
+// 读取 run 目录下操作日志尾部（run.log + run_error.log）
+export async function getLog() {
+  const result = await runModuleCommand(`sh ${WEBUI_SCRIPT} log`)
+  return result.ok ? result.stdout : result.stderr || result.stdout
 }
 
 export async function startService() {
