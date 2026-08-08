@@ -1,7 +1,7 @@
 <script setup>
-// 概览页：状态卡片 / 地址 / 服务控制 / 开机自启。
+// 概览页：状态卡片 / 地址 / 安全建议 / 服务控制。
 import { computed, onMounted } from 'vue'
-import { MiuixCard, MiuixText, MiuixButton, MiuixSmallTitle, MiuixSwitchPreference } from 'miuix-vue'
+import { MiuixCard, MiuixText, MiuixButton, MiuixSmallTitle } from 'miuix-vue'
 import { useModuleState } from '../composables/useModuleState'
 import * as moduleApi from '../api/module'
 
@@ -57,13 +57,18 @@ function handleOpen() {
   }
 }
 
-// 开关值没变直接跳过；失败时回读真实状态，避免 UI 与模块不一致。
-function handleAutostartToggle(v) {
-  if (v === status.value.autostart) return
-  runAction('toggle-autostart', () => moduleApi.toggleAutostart()).then((ok) => {
-    if (!ok) refreshStatus(false)
-  })
-}
+// 安全问题列表：每条自带标题与描述，新增类型只需往数组里 push
+const securityIssues = computed(() => {
+  if (!status.value) return []
+  const issues = []
+  if (status.value.backendPathIsDefault) {
+    issues.push({
+      title: '访问路径',
+      text: '当前仍为模块默认值，所有安装者都一样，建议到设置页重新生成',
+    })
+  }
+  return issues
+})
 </script>
 
 <template>
@@ -104,6 +109,16 @@ function handleAutostartToggle(v) {
       </div>
     </MiuixCard>
 
+    <MiuixSmallTitle v-if="securityIssues.length" text="安全建议" />
+    <MiuixCard
+      v-for="issue in securityIssues"
+      :key="issue.title"
+      class="ex-card ex-card--pad"
+    >
+      <MiuixText type="body1">{{ issue.title }}</MiuixText>
+      <MiuixText type="body2" color="var(--m-color-error)">{{ issue.text }}</MiuixText>
+    </MiuixCard>
+
     <MiuixSmallTitle text="服务控制" />
     <MiuixCard class="ex-card ex-card--pad">
       <div class="control-row">
@@ -123,17 +138,6 @@ function handleAutostartToggle(v) {
           @click="runAction('restart', () => moduleApi.restartService())"
         >重启</MiuixButton>
       </div>
-    </MiuixCard>
-
-    <MiuixSmallTitle text="开机自启" />
-    <MiuixCard class="ex-card">
-      <MiuixSwitchPreference
-        v-if="status"
-        title="开机自启"
-        summary="下次开机自动启动服务"
-        :model-value="status.autostart"
-        @update:model-value="handleAutostartToggle"
-      />
     </MiuixCard>
 
     <div v-if="error" class="ex-error">
