@@ -17,6 +17,9 @@ importers:
       motion-v:
         specifier: ^2.3.0
         version: 2.3.0(@vueuse/core@14.4.0(vue@3.5.41))(vue@3.5.41)
+      subsetted-fonts:
+        specifier: 1.0.4
+        version: 1.0.4
       vue:
         specifier: ^3.5.40
         version: 3.5.41
@@ -607,6 +610,9 @@ packages:
     resolution: {integrity: sha512-UXWMKhLOwVKb728IUtQPXxfYU+usdybtUrK/8uGE8CQMvrhOpwvzDBwj0QhSL7MQc7vIsISBG8VQ8+IDQxpfQA==}
     engines: {node: '>=0.10.0'}
 
+  subsetted-fonts@1.0.4:
+    resolution: {integrity: sha512-d/z+2OruazabDwJ6mHCDQhOQ/8BJW7r1VXeVvw9xBP49DH1pSGPgpNbGcG7tQc6EMsZOfFQnXwFdEakwV4CuIw==}
+
   supports-color@8.1.1:
     resolution: {integrity: sha512-MpUEN2OodtUzxvKQl72cUF7RQ5EiHsGvSsVG0ia9c5RbWGL2CI4C7EpPS8UTBIplnlzZiNuV56w+FuNxy3ty2Q==}
     engines: {node: '>=10'}
@@ -1140,6 +1146,8 @@ snapshots:
     optional: true
 
   source-map-js@1.2.1: {}
+
+  subsetted-fonts@1.0.4: {}
 
   supports-color@8.1.1:
     dependencies:

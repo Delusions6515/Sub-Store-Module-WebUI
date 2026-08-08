@@ -119,7 +119,7 @@ body {
 
 body {
   font-family:
-    'MiSans VF',
+    'MiSans-VF',
     -apple-system,
     BlinkMacSystemFont,
     'Segoe UI',
