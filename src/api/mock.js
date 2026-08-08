@@ -34,6 +34,11 @@ export function mockExec(command, options = {}) {
         resolve({ errno: 0, stdout: JSON.stringify(MOCK_STATUS), stderr: '' })
         return
       }
+      if (command.includes('log-size')) {
+        // dev 环境跳过完成轮询，返回固定字节数即可
+        resolve({ errno: 0, stdout: '400', stderr: '' })
+        return
+      }
       const key = Object.keys(MOCK_OUTPUT).find((k) => command.includes(k))
       resolve({ errno: 0, stdout: MOCK_OUTPUT[key] || MOCK_OUTPUT.default, stderr: '' })
     }, 300)

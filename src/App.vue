@@ -98,8 +98,13 @@ onBeforeUnmount(() => {
 
 <style lang="scss">
 // 全局基础样式（原 src/styles/theme.css 收进这里），字体栈沿用 example 的 MiSans 那套。
+// 语义色调：库 token 只覆盖 主色(蓝)/错误(红)，绿/橙没有现成语义 token，
+// 用 miuix 色板近似值（example 下拉示例的 #36D167 绿 / #FFB21D 黄）定义成
+// 全局变量，状态卡片与操作日志共用，便于日后统一换 token。
 :root {
   color-scheme: light dark;
+  --tone-success: #36d167;
+  --tone-warning: #ffb21d;
 }
 
 html,
