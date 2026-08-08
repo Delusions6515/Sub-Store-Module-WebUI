@@ -50,15 +50,16 @@ export async function getStatus() {
   return JSON.parse(result.stdout)
 }
 
-// 读取 run 目录下操作日志尾部（run.log + run_error.log）
+// 读取操作日志（run.log + run_error.log；配合 runServiceAction 的 log-reset，内容即本次操作输出）
 export async function getLog() {
   const result = await runModuleCommand(`sh ${WEBUI_SCRIPT} log`)
   return result.ok ? result.stdout : result.stderr || result.stdout
 }
 
-// 服务控制：nohup 后台执行并立即返回（输出由 webui.sh 追写进 run.log），避免 exec 等待命令完成卡住 UI
-// 返回后需轮询状态确认操作生效，再读取 run.log 展示结果
+// 服务控制：先归档操作日志（run.log → .bak），再 nohup 后台执行并立即返回
+// 归档后新 run.log 只含本次操作输出，直接读取即可，不受历史日志/轮转影响
 export async function runServiceAction(name) {
+  await runModuleCommand(`sh ${WEBUI_SCRIPT} log-reset`)
   return runModuleCommand(`nohup sh ${WEBUI_SCRIPT} ${name} >/dev/null 2>&1 &`)
 }
 

@@ -90,12 +90,12 @@ async function handleServiceAction(name) {
   currentAction.value = name
   pendingAction.value = true
   try {
-    // 1. 后台触发命令（立即返回，不阻塞 UI）
+    // 1. 后台触发（内部先归档旧日志，新 run.log 只含本次输出；exec 立即返回）
     const result = await moduleApi.runServiceAction(name)
     if (!result.ok) throw new Error(result.stderr || '指令发送失败')
     // 2. 轮询服务状态至操作完成（浏览器 dev 环境跳过）
     if (!moduleApi.isBrowserDev) await pollServiceState(name)
-    // 3. 读取 run.log 展示（含本次操作输出与历史日志）
+    // 3. 读取本次操作的日志
     actionLog.value = await moduleApi.getLog().catch(() => '')
     showLog.value = true
   } catch (err) {
