@@ -1,8 +1,19 @@
-import { exec, moduleInfo } from 'kernelsu'
+import { exec, moduleInfo, enableEdgeToEdge } from 'kernelsu'
 import { mockExec, MOCK_MODULE_VERSION } from './mock'
 
 // 浏览器开发环境没有 ksu 全局对象，使用 mock 实现（pnpm dev 本地预览）
 export const isBrowserDev = typeof window !== 'undefined' && !window.ksu
+
+// KSU/APatch edge-to-edge 全屏：请求管理器注入 --safe-area-inset-*（浏览器 dev 跳过）。
+// 管理器默认 edge-to-edge 但不注入 inset，须页面主动 enableEdgeToEdge/fullScreen 才接收。
+export function requestFullScreen() {
+  if (isBrowserDev) return
+  try {
+    enableEdgeToEdge(true)
+  } catch {
+    /* 非 KSU/APatch 环境或旧版无此 API，忽略 */
+  }
+}
 
 // moduleInfo() 返回 module.prop 全字段 + moduleDir，模块加载时取一次
 const moduleInfoData = isBrowserDev

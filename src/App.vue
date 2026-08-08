@@ -14,7 +14,7 @@ import OverviewPage from './pages/OverviewPage.vue'
 import UpdatesPage from './pages/UpdatesPage.vue'
 import SettingsPage from './pages/SettingsPage.vue'
 import AboutPage from './pages/AboutPage.vue'
-import { MODULE_VERSION } from './api/module'
+import { MODULE_VERSION, requestFullScreen } from './api/module'
 
 // 顶栏副标题：模块版本号（module.prop 的 version）
 const subtitle = MODULE_VERSION ? `v${MODULE_VERSION}` : ''
@@ -56,6 +56,9 @@ function syncSnackbarInset() {
 }
 
 onMounted(() => {
+  // KSU/APatch 全屏：进 WebUI 即请求全屏并接收系统栏 inset（浏览器 dev 下为空操作）
+  requestFullScreen()
+
   if (bottomBarRef.value) {
     barObserver = new ResizeObserver(syncSnackbarInset)
     barObserver.observe(bottomBarRef.value)
@@ -97,6 +100,10 @@ onBeforeUnmount(() => {
 </template>
 
 <style lang="scss">
+// KSU/APatch 全屏：加载官方 insets.css，提供 --window-inset-* 等安全区变量
+// （KSU 管理器会自动替换为实际系统栏像素，浏览器 dev 下回退 0）。
+@import url("https://mui.kernelsu.org/internal/insets.css");
+
 // 全局基础样式（原 src/styles/theme.css 收进这里），字体栈沿用 example 的 MiSans 那套。
 // 语义色调：库 token 只覆盖 主色(蓝)/错误(红)，绿/橙没有现成语义 token，
 // 用 miuix 色板近似值（example 下拉示例的 #36D167 绿 / #FFB21D 黄）定义成
@@ -105,6 +112,10 @@ onBeforeUnmount(() => {
   color-scheme: light dark;
   --tone-success: #36d167;
   --tone-warning: #ffb21d;
+
+  // 布局安全区：顶栏垫状态栏、底栏垫手势条（值来自上方 insets.css）
+  --top-inset: var(--window-inset-top, 0px);
+  --bottom-inset: var(--window-inset-bottom, 0px);
 }
 
 html,
@@ -139,6 +150,9 @@ body {
   min-height: 0;
   background: var(--m-color-surface);
 
+  // KSU/APatch 全屏：顶部分别垫状态栏高度，表面背景仍延伸盖住系统栏区域。
+  padding-top: var(--top-inset, 0px);
+
   // 顶栏留白：不贴屏幕边缘，行高 52px 基础上再给四周呼吸空间。
   &__topbar {
     padding: 8px 20px;
@@ -147,6 +161,8 @@ body {
   &__bottom {
     flex: none;
     z-index: 10;
+    // 底部垫手势条高度，导航栏内容避开系统手势区。
+    padding-bottom: var(--bottom-inset, 0px);
   }
 
   // flex:1 + min-height:0 让 body 恰好占满上下栏之间的空间，
