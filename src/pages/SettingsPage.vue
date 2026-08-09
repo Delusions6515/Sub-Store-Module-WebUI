@@ -47,7 +47,6 @@ function handleAutostartToggle(v) {
       <MiuixDropdownPreference
         v-model="colorMode"
         title="主题"
-        :summary="colorModeItems[colorMode]"
         :items="colorModeItems"
       />
     </MiuixCard>
