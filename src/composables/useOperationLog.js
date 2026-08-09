@@ -12,7 +12,7 @@ export function useOperationLog() {
 
   // 轮询 update.log 字节数，连续 stableTimes 次无增长视为完成；
   // onPoll 在每次轮询时调用（伪实时刷新日志内容用）
-  async function pollUntilIdle(timeoutMs, onPoll, intervalMs = 1000, stableTimes = 3) {
+  async function pollUntilIdle(timeoutMs, onPoll, intervalMs = 1000, stableTimes = 4) {
     const deadline = Date.now() + timeoutMs
     let stable = 0
     let lastSize = -1
