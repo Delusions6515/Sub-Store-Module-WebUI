@@ -15,9 +15,13 @@ import UpdatesPage from './pages/UpdatesPage.vue'
 import SettingsPage from './pages/SettingsPage.vue'
 import AboutPage from './pages/AboutPage.vue'
 import { MODULE_VERSION, requestFullScreen } from './api/module'
+import { useStoredTheme } from './composables/useStoredTheme'
 
 // 顶栏副标题：模块版本号（module.prop 的 version）
 const subtitle = MODULE_VERSION ? `v${MODULE_VERSION}` : ''
+
+// 主题持久化：恢复上次选择并持续写回（useStoredTheme 是模块级单例，此处调用保证初始化）
+useStoredTheme()
 
 const pages = [OverviewPage, UpdatesPage, SettingsPage, AboutPage]
 const titles = ['概览', '更新', '配置', '关于']

@@ -8,15 +8,15 @@ import {
   MiuixSwitchPreference,
   MiuixButton,
   MiuixText,
-  useTheme,
 } from 'miuix-vue'
 import { useModuleState } from '../composables/useModuleState'
+import { useStoredTheme } from '../composables/useStoredTheme'
 import * as moduleApi from '../api/module'
 
 const { status, busy, refreshStatus, runAction } = useModuleState()
 
-// 主题：跟随系统 / 浅色 / 深色（对应 miuix example SettingsPage 的 Color Mode）。
-const { mode, setThemeMode } = useTheme()
+// 主题：跟随系统 / 浅色 / 深色（对应 miuix example SettingsPage 的 Color Mode），选择持久化。
+const { mode, setThemeMode } = useStoredTheme()
 const colorModes = ['system', 'light', 'dark']
 const colorModeItems = ['跟随系统', '浅色', '深色']
 const colorMode = computed({
