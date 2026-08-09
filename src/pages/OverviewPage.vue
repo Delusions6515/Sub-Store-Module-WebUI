@@ -130,7 +130,7 @@ const securityIssues = computed(() => {
   if (status.value.runUserIsRoot) {
     issues.push({
       title: '运行用户',
-      text: '当前以 root 用户运行，存在安全风险，建议改用 shell 用户运行（可在 sub_store.config 中 修改 run_as_user="shell"）如若 shell 用户遇到网络问题，请优先尝试修改 sub_store.env 的 SUB_STORE_BACKEND_DEFAULT_PROXY="<你的代理软件的代理地址>"）',
+      text: '当前以 root 用户运行，存在安全风险，建议改用 shell 用户运行（可在 sub_store.config 中 修改 run_as_user="shell"）',
     })
   }
   return issues
