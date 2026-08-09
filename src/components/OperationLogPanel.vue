@@ -48,7 +48,7 @@ watch(
 <style lang="scss" scoped>
 // 操作日志：等宽字体、限高滚动，行色按日志级别
 .log-box {
-  max-height: 240px;
+  max-height: 300px;
   overflow-y: auto;
   font-family: 'JetBrains Mono', 'Cascadia Mono', Menlo, Consolas, monospace;
   font-size: 12px;
