@@ -79,10 +79,11 @@ export async function getUpdateLog() {
   return result.ok ? result.stdout : result.stderr || result.stdout
 }
 
-// 查询 update.log 当前字节数，用于轮询判断更新是否完成（日志停止增长即结束）
-export async function getUpdateLogSize() {
-  const result = await runModuleCommand(`sh ${WEBUI_SCRIPT} update-log-size`)
-  return Number(result.stdout) || 0
+// 查询更新完成状态：返回 'running' 或 update.done 中的退出码。
+// 完成判定靠 webui.sh 在更新进程退出时写的标记，而非日志字节数（大文件下载可能长时间停滞）。
+export async function getUpdateStatus() {
+  const result = await runModuleCommand(`sh ${WEBUI_SCRIPT} update-status`)
+  return (result.stdout || 'running').trim()
 }
 
 // 后台执行：先同步轮转旧日志（新 run.log 只含本次输出），再 nohup 后台运行。

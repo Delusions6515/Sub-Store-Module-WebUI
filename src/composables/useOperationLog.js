@@ -10,22 +10,15 @@ export function useOperationLog() {
 
   const sleep = (ms) => new Promise((r) => setTimeout(r, ms))
 
-  // 轮询 update.log 字节数，连续 stableTimes 次无增长视为完成；
+  // 轮询 update.done 标记直到更新真正结束（大文件下载时日志可能长时间停滞，
+  // 不能靠字节数稳定判断完成；标记由 webui.sh 在更新进程退出时写入退出码）。
   // onPoll 在每次轮询时调用（伪实时刷新日志内容用）
-  async function pollUntilIdle(timeoutMs, onPoll, intervalMs = 1000, stableTimes = 4) {
+  async function pollUntilDone(timeoutMs, onPoll, intervalMs = 1000) {
     const deadline = Date.now() + timeoutMs
-    let stable = 0
-    let lastSize = -1
     while (Date.now() < deadline) {
-      const size = await moduleApi.getUpdateLogSize().catch(() => lastSize)
-      if (size === lastSize) {
-        stable += 1
-        if (stable >= stableTimes) return true
-      } else {
-        stable = 0
-      }
-      lastSize = size
       if (onPoll) await onPoll()
+      const status = await moduleApi.getUpdateStatus().catch(() => 'running')
+      if (status !== 'running') return true
       await sleep(intervalMs)
     }
     return false
@@ -45,7 +38,7 @@ export function useOperationLog() {
       }
       if (!moduleApi.isBrowserDev) {
         // 伪实时：执行期间每次轮询都刷新日志内容（空日志保持占位符，避免面板闪空）
-        await pollUntilIdle(timeoutMs, async () => {
+        await pollUntilDone(timeoutMs, async () => {
           const log = await moduleApi.getUpdateLog().catch(() => '')
           if (log) content.value = log
         })
