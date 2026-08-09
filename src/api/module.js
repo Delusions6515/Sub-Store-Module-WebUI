@@ -61,21 +61,35 @@ export async function getStatus() {
   return JSON.parse(result.stdout)
 }
 
-// 读取操作日志（run.log + run_error.log；配合 log-reset 归档，内容即本次操作输出）
+// 读取服务操作日志（run.log + run_error.log；配合 log-reset 归档，内容即本次操作输出）
 export async function getLog() {
   const result = await runModuleCommand(`sh ${WEBUI_SCRIPT} log`)
   return result.ok ? result.stdout : result.stderr || result.stdout
 }
 
-// 查询 run.log 当前字节数，用于轮询判断操作/更新是否完成（日志停止增长即结束）
+// 查询 run.log 当前字节数，用于轮询判断服务操作是否完成（日志停止增长即结束）
 export async function getLogSize() {
   const result = await runModuleCommand(`sh ${WEBUI_SCRIPT} log-size`)
   return Number(result.stdout) || 0
 }
 
-// 后台执行：nohup & 立即返回（webui.sh 内部先轮转 run.log，新文件只含本次操作输出）。
+// 读取更新日志（update.log + update_error.log；webui.sh 已把重启操作日志追加进 update.log）
+export async function getUpdateLog() {
+  const result = await runModuleCommand(`sh ${WEBUI_SCRIPT} update-log`)
+  return result.ok ? result.stdout : result.stderr || result.stdout
+}
+
+// 查询 update.log 当前字节数，用于轮询判断更新是否完成（日志停止增长即结束）
+export async function getUpdateLogSize() {
+  const result = await runModuleCommand(`sh ${WEBUI_SCRIPT} update-log-size`)
+  return Number(result.stdout) || 0
+}
+
+// 后台执行：先同步轮转旧日志（新 run.log 只含本次输出），再 nohup 后台运行。
 // 服务控制（start/stop/restart）与更新（update-*）都走这里，页面传完整子命令。
+// update-* 在 webui.sh 内不轮转，必须在此先行 log-reset，否则会追加到上次的旧日志。
 export async function runBackground(name) {
+  await runModuleCommand(`sh ${WEBUI_SCRIPT} log-reset`)
   return runModuleCommand(`nohup sh ${WEBUI_SCRIPT} ${name} >/dev/null 2>&1 &`)
 }
 
