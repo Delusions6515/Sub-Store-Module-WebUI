@@ -176,13 +176,13 @@ const securityIssues = computed(() => {
     </MiuixCard>
 
     <MiuixSmallTitle v-if="securityIssues.length" text="安全建议" />
-    <MiuixCard
-      v-for="issue in securityIssues"
-      :key="issue.title"
-      class="ex-card ex-card--pad"
-    >
-      <MiuixText type="body1">{{ issue.title }}</MiuixText>
-      <MiuixText type="body2" color="var(--m-color-error)">{{ issue.text }}</MiuixText>
+    <MiuixCard v-if="securityIssues.length" class="ex-card ex-card--pad">
+      <div v-for="(issue,i) in securityIssues" :key="issue.title" class="issues-item" :class='{ "issues-item--divided": i > 0 }'>
+        <div class="issues-item__head">
+          <MiuixText type="body1" weight="bold">{{ issue.title }}</MiuixText>
+        </div>
+        <MiuixText type="body2" class="issues-item__sample" color="var(--m-color-error)">{{ issue.text }}</MiuixText>
+      </div>
     </MiuixCard>
 
     <MiuixSmallTitle text="服务控制" />
@@ -284,5 +284,30 @@ const securityIssues = computed(() => {
 
 .ex-error {
   margin: 0 12px 12px;
+}
+
+.issues-item {
+  display: flex;
+  flex-direction: column;
+  // TextStyleItem: Column padding(vertical = 10.dp).
+  padding: 10px 0;
+
+  // HorizontalDivider between items (vertical padding 2dp in source).
+  &--divided {
+    border-top: 0.75px solid var(--m-color-divider-line);
+  }
+
+  &__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    // Spacer(8.dp) between the header row and the first sample.
+    margin-bottom: 8px;
+  }
+
+  // Spacer(2.dp) between consecutive sample lines.
+  &__sample + &__sample {
+    margin-top: 2px;
+  }
 }
 </style>
