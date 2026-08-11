@@ -72,9 +72,9 @@ async function save() {
 </script>
 
 <template>
-  <div>
+  <div class="env-editor">
     <MiuixSmallTitle v-if="title" :text="title" />
-    <MiuixCard class="ex-card ex-card--pad">
+    <MiuixCard class="ex-card ex-card--pad env-editor__card">
       <Codemirror
         v-model="content"
         class="env-editor__code"
@@ -104,25 +104,48 @@ async function save() {
 </template>
 
 <style lang="scss" scoped>
-// CodeMirror 限高滚动；浅色用默认白底，深色叠加 one-dark
+// 编辑器填满父级剩余空间：root→卡片 wrapper→.m-card→CodeMirror 逐层 flex 拉伸，
+// 文本区内部滚动；独立使用（无 flex 容器）时退化为 min-height 320px。
+.env-editor {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+}
+
+.env-editor__card {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+
+  :deep(.m-card) {
+    flex: 1;
+    min-height: 0;
+  }
+}
+
 .env-editor__code {
   :deep(.cm-editor) {
+    flex: 1;
     min-height: 320px;
-    max-height: 50vh;
     font-size: 13px;
   }
   :deep(.cm-scroller) {
-    max-height: 50vh;
+    height: 100%;
+    min-height: 320px;
     overflow: auto;
   }
 }
 
 .env-editor__error {
+  flex: none;
   display: block;
   margin-top: 8px;
 }
 
 .env-editor__actions {
+  flex: none;
   display: flex;
   gap: 12px;
   margin-top: 12px;

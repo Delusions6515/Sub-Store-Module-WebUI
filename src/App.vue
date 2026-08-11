@@ -176,6 +176,13 @@ body {
     min-height: 0;
   }
 
+  // 内容 wrapper 撑满视口高度，供子页面（如设置页编辑器 Tab）用 height:100% 占满剩余空间。
+  // 内容超出视口的页面（概览/更新等）仍由 viewport 滚动：scrollable overflow 含溢出于孙，
+  // 不受 height:100% 影响。
+  &__body .m-scroll-area__content {
+    height: 100%;
+  }
+
   // 固定顶栏 + 滚动体 + 底栏都坐在 surface 背景上（卡片之下）。
   &__body,
   .m-top-app-bar,
