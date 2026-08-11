@@ -1,6 +1,6 @@
 <script setup>
 // 配置页：主题 / 启动开关 / 访问路径重生成。
-import { computed, onMounted } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import {
   MiuixCard,
   MiuixDropdownPreference,
@@ -12,6 +12,7 @@ import {
 import { useModuleState } from '../composables/useModuleState'
 import { useStoredTheme } from '../composables/useStoredTheme'
 import * as moduleApi from '../api/module'
+import EnvFileEditor from '@/components/EnvFileEditor.vue'
 
 const { status, busy, refreshStatus, runAction } = useModuleState()
 
@@ -36,6 +37,13 @@ function handleAutostartToggle(v) {
   runAction('toggle-autostart', () => moduleApi.toggleAutostart()).then((ok) => {
     if (!ok) refreshStatus(false)
   })
+}
+
+// 编辑器
+const showEnvEditor = ref(false)
+
+function handleEnvEditorToggle() {
+  showEnvEditor.value = !showEnvEditor.value
 }
 </script>
 
@@ -78,6 +86,17 @@ function handleAutostartToggle(v) {
         class="path-warn"
       >当前仍为模块默认值，所有安装者都一样，建议重新生成。</MiuixText>
     </MiuixCard>
+
+    <MiuixSmallTitle text="高级设置" />
+    <MiuixCard class="ex-card">
+      <MiuixSwitchPreference
+        title="显示 Sub-Store 环境变量编辑器"
+        summary="编辑 /data/local/sub_store/scripts/sub_store.env，保存后需重启生效"
+        :model-value="showEnvEditor"
+        @update:model-value="handleEnvEditorToggle"
+      />
+    </MiuixCard>
+    <EnvFileEditor v-if="showEnvEditor" title="sub_store.env" />
   </div>
 </template>
 

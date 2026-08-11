@@ -105,3 +105,20 @@ export async function regenerateBackendPath() {
 export async function openUrl(url) {
   return runModuleCommand(`am start -a android.intent.action.VIEW -d '${url}'`)
 }
+
+// 读取用户配置 env 文件（webui.sh 内缺失时先从模块默认落一份）
+export async function readEnvFile() {
+  const result = await runModuleCommand(`sh ${WEBUI_SCRIPT} read-env`)
+  if (!result.ok) throw new Error(result.stderr || '读取 env 文件失败')
+  return result.stdout
+}
+
+// 保存用户配置 env 文件：内容经 base64 传输（规避引号/换行/特殊字符）。
+// webui.sh save-env 先 cp 当前源文件为 .webbak，再把新内容写入源文件
+export async function writeEnvFile(content) {
+  const bytes = new TextEncoder().encode(content)
+  let bin = ''
+  for (let i = 0; i < bytes.length; i++) bin += String.fromCharCode(bytes[i])
+  const result = await runModuleCommand(`sh ${WEBUI_SCRIPT} save-env '${btoa(bin)}'`)
+  if (!result.ok) throw new Error(result.stderr || '写入 env 文件失败')
+}
