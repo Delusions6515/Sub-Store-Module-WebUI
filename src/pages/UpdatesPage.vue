@@ -34,7 +34,7 @@ async function handleUpdate() {
 <template>
   <div class="page">
     <MiuixSmallTitle text="更新" />
-    <MiuixCard class="ex-card">
+    <MiuixCard class="ex-card update-panel">
       <MiuixDropdownPreference
         v-model="selectedIndex"
         title="更新项"
@@ -48,21 +48,26 @@ async function handleUpdate() {
       </div>
     </MiuixCard>
 
-    <OperationLogPanel :visible="visible" :content="content" title="操作日志" />
+    <OperationLogPanel :visible="visible" :content="content" title="操作日志" fill />
   </div>
 </template>
 
 <style lang="scss">
 .page {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
   padding-bottom: 12px;
-
-  > :last-child {
-    margin-bottom: 0;
-  }
 }
 
 .ex-card {
   margin: 0 12px 12px;
+}
+
+.update-panel {
+  min-height: 0;
+  overflow-y: auto;
 }
 
 // 按钮行：与下拉框内容同宽（basic-component 行内 16px padding），右下角对齐
