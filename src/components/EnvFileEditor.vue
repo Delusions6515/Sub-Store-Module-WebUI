@@ -11,6 +11,8 @@ import { oneDark } from '@codemirror/theme-one-dark'
 import { MiuixButton, MiuixCard, MiuixSmallTitle, MiuixText } from 'miuix-vue'
 import { readEnvFile, writeEnvFile } from '../api/module'
 import { useStoredTheme } from '../composables/useStoredTheme'
+// Supports weights 100-800
+import '@fontsource-variable/jetbrains-mono/wght.css';
 
 const props = defineProps({
   title: { type: String, default: '' },
@@ -135,6 +137,7 @@ async function save() {
     height: 100%;
     min-height: 320px;
     overflow: auto;
+    font-family: 'JetBrains Mono Variable', monospace;
   }
 }
 
