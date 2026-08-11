@@ -1,6 +1,6 @@
 <script setup>
 // 概览页：状态卡片 / 地址 / 安全建议 / 服务控制 / 操作日志。
-import { computed, onMounted, ref } from 'vue'
+import { computed, onActivated, ref } from 'vue'
 import { MiuixCard, MiuixText, MiuixButton, MiuixSmallTitle, showSnackbar } from 'miuix-vue'
 import { useModuleState } from '../composables/useModuleState'
 import { useOperationLog } from '../composables/useOperationLog'
@@ -9,7 +9,7 @@ import * as moduleApi from '../api/module'
 
 const { status, busy, error, refreshStatus, runAction } = useModuleState()
 
-onMounted(() => {
+onActivated(() => {
   refreshStatus(false)
 })
 
