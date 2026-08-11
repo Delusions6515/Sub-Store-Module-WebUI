@@ -30,8 +30,8 @@ importers:
         specifier: ^2.3.0
         version: 2.3.0(@vueuse/core@14.4.0(vue@3.5.41))(vue@3.5.41)
       subsetted-fonts:
-        specifier: 1.0.4
-        version: 1.0.4
+        specifier: 1.0.5
+        version: 1.0.5
       vue:
         specifier: ^3.5.40
         version: 3.5.41
@@ -673,8 +673,8 @@ packages:
   style-mod@4.1.3:
     resolution: {integrity: sha512-i/n8VsZydrugj3Iuzll8+x/00GH2vnYsk1eomD8QiRrSAeW6ItbCQDtfXCeJHd0iwiNagqjQkvpvREEPtW3IoQ==}
 
-  subsetted-fonts@1.0.4:
-    resolution: {integrity: sha512-d/z+2OruazabDwJ6mHCDQhOQ/8BJW7r1VXeVvw9xBP49DH1pSGPgpNbGcG7tQc6EMsZOfFQnXwFdEakwV4CuIw==}
+  subsetted-fonts@1.0.5:
+    resolution: {integrity: sha512-dnN2xPjJnBy7MZyHHJYGOiUtBtUETvAg8AnvbfTb27aKxmhjxsBLO8qzXUgJY/WofM3kV6t3U5JcZ6C/kKWiJQ==}
 
   supports-color@8.1.1:
     resolution: {integrity: sha512-MpUEN2OodtUzxvKQl72cUF7RQ5EiHsGvSsVG0ia9c5RbWGL2CI4C7EpPS8UTBIplnlzZiNuV56w+FuNxy3ty2Q==}
@@ -1302,7 +1302,7 @@ snapshots:
 
   style-mod@4.1.3: {}
 
-  subsetted-fonts@1.0.4: {}
+  subsetted-fonts@1.0.5: {}
 
   supports-color@8.1.1:
     dependencies:
