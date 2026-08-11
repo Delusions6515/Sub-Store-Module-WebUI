@@ -91,7 +91,7 @@ const tab = ref(0)
     </div>
 
     <div v-show="tab === 1" class="editor-panel">
-      <EnvFileEditor title="sub_store.env" />
+      <EnvFileEditor title="/data/local/sub_store/scripts/sub_store.env" />
     </div>
   </div>
 </template>
