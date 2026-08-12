@@ -1,6 +1,6 @@
 <script setup>
 // 配置页：Tab 1 常规设置（主题/启动/访问路径），Tab 2 Sub-Store 环境变量编辑器。
-import { computed, onMounted, ref } from 'vue'
+import { computed, defineAsyncComponent, onMounted, ref, watch } from 'vue'
 import {
   MiuixCard,
   MiuixDropdownPreference,
@@ -13,7 +13,6 @@ import {
 import { useModuleState } from '../composables/useModuleState'
 import { useStoredTheme } from '../composables/useStoredTheme'
 import * as moduleApi from '../api/module'
-import EnvFileEditor from '@/components/EnvFileEditor.vue'
 
 const { status, busy, refreshStatus, runAction } = useModuleState()
 
@@ -40,8 +39,14 @@ function handleAutostartToggle(v) {
   })
 }
 
-// Tab：0=设置 1=编辑器。面板用 v-show 保持挂载，切 Tab 不丢失未保存的编辑器内容。
+// 编辑器首次打开时才下载并创建；之后用 v-show 保留未保存内容。
 const tab = ref(0)
+const editorVisited = ref(false)
+const EnvFileEditor = defineAsyncComponent(() => import('@/components/EnvFileEditor.vue'))
+
+watch(tab, (value) => {
+  if (value === 1) editorVisited.value = true
+})
 </script>
 
 <template>
@@ -90,7 +95,7 @@ const tab = ref(0)
       </MiuixCard>
     </div>
 
-    <div v-show="tab === 1" class="editor-panel">
+    <div v-if="editorVisited" v-show="tab === 1" class="editor-panel">
       <EnvFileEditor title="/data/local/sub_store/scripts/sub_store.env" />
     </div>
   </div>

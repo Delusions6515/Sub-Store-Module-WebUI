@@ -1,7 +1,7 @@
 <script setup>
 // Sub-Store 模块 WebUI 应用骨架：
 // 固定顶栏 + NavigationBar + ScrollArea + SnackbarHost + 主题切换。
-import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import { computed, defineAsyncComponent, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import {
   MiuixIcon,
   MiuixNavigationBar,
@@ -10,10 +10,6 @@ import {
   MiuixTopAppBar,
 } from 'miuix-vue'
 import { GridView, Update, Settings, Info } from 'miuix-vue/icons'
-import OverviewPage from './pages/OverviewPage.vue'
-import UpdatesPage from './pages/UpdatesPage.vue'
-import SettingsPage from './pages/SettingsPage.vue'
-import AboutPage from './pages/AboutPage.vue'
 import { MODULE_VERSION, requestFullScreen } from './api/module'
 import { useStoredTheme } from './composables/useStoredTheme'
 
@@ -23,7 +19,13 @@ const subtitle = MODULE_VERSION ? `v${MODULE_VERSION}` : ''
 // 主题持久化：恢复上次选择并持续写回（useStoredTheme 是模块级单例，此处调用保证初始化）
 useStoredTheme()
 
-const pages = [OverviewPage, UpdatesPage, SettingsPage, AboutPage]
+// 页面仅在对应 tab 首次打开时下载，避免配置编辑器的 CodeMirror 进入首屏包。
+const pages = [
+  defineAsyncComponent(() => import('./pages/OverviewPage.vue')),
+  defineAsyncComponent(() => import('./pages/UpdatesPage.vue')),
+  defineAsyncComponent(() => import('./pages/SettingsPage.vue')),
+  defineAsyncComponent(() => import('./pages/AboutPage.vue')),
+]
 const titles = ['概览', '更新', '配置', '关于']
 const navItems = titles.map((label) => ({ label }))
 // 各 tab 图标：与 miuix example 的 AppContent.kt navigationItems 对应。
