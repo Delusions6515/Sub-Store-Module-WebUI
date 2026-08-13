@@ -1,4 +1,4 @@
-import { exec, moduleInfo, enableEdgeToEdge } from 'kernelsu'
+import { exec, spawn, moduleInfo, enableEdgeToEdge } from 'kernelsu'
 import { mockExec, MOCK_MODULE_VERSION } from './mock'
 
 // 浏览器开发环境没有 ksu 全局对象，使用 mock 实现（pnpm dev 本地预览）
@@ -91,7 +91,8 @@ export async function getUpdateStatus() {
 // update-* 在 webui.sh 内不轮转，必须在此先行 log-reset，否则会追加到上次的旧日志。
 export async function runBackground(name) {
   await runModuleCommand(`sh ${WEBUI_SCRIPT} log-reset`)
-  return runModuleCommand(`nohup sh ${WEBUI_SCRIPT} ${name} >/dev/null 2>&1 &`)
+  spawn('sh', [WEBUI_SCRIPT, name])
+  return { ok: true, errno: 0, stdout: '', stderr: '' }
 }
 
 export async function toggleAutostart() {
