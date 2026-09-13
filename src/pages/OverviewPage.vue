@@ -127,6 +127,12 @@ const securityIssues = computed(() => {
       text: '当前仍为模块默认值，所有安装者都一样，建议到设置页重新生成',
     })
   }
+  if (status.value.backendPathIsEmpty && status.value.crosAllowedOriginsIsAll) {
+    issues.push({
+      title: '后端路径与跨域访问',
+      text: '当前后端路径为 "/" 且允许所有来源访问，存在安全隐患，建议重新生成随机路径或仅允许可信来源访问',
+    })
+  }
   if (status.value.runUserIsRoot) {
     issues.push({
       title: '运行用户',
