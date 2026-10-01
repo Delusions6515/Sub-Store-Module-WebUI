@@ -28,10 +28,10 @@ importers:
         version: 3.0.2
       miuix-vue:
         specifier: ^0.1.1
-        version: 0.1.1(motion-v@2.4.4(@vueuse/core@14.4.0(vue@3.5.43))(vue@3.5.43))(vue@3.5.43)
+        version: 0.1.1(motion-v@2.5.0(@vueuse/core@14.4.0(vue@3.5.43))(vue@3.5.43))(vue@3.5.43)
       motion-v:
-        specifier: ^2.4.4
-        version: 2.4.4(@vueuse/core@14.4.0(vue@3.5.43))(vue@3.5.43)
+        specifier: ^2.5.0
+        version: 2.5.0(@vueuse/core@14.4.0(vue@3.5.43))(vue@3.5.43)
       subsetted-fonts:
         specifier: 1.0.5
         version: 1.0.5
@@ -519,8 +519,8 @@ packages:
   motion-utils@13.3.0:
     resolution: {integrity: sha512-sgSschQp7EseHInIlR7hBbMuvet3RA0bs28KPZAXJcGKGdxHGvh1ogpYDilY3bOMtl73EqPNmp75sAKHYPU5sg==}
 
-  motion-v@2.4.4:
-    resolution: {integrity: sha512-AMb3Acnl+xFZhCFqEklnpDK/STntM2BCrySqlnoinLnD7hgHmJ7p09RY5r3exhne2speoKM6KIEg7TMDy8cT9w==}
+  motion-v@2.5.0:
+    resolution: {integrity: sha512-3fFtKB2U421EzhiRrxZCnSOGt+o+Te9XUtgKFG44vpje/mM5Eu23VGc4lbaxm0ky8plhjk5usJgx3l1OEXm6oA==}
     peerDependencies:
       '@vueuse/core': '>=10.0.0'
       vue: '>=3.0.0'
@@ -1157,9 +1157,9 @@ snapshots:
     dependencies:
       '@jridgewell/sourcemap-codec': 1.6.0
 
-  miuix-vue@0.1.1(motion-v@2.4.4(@vueuse/core@14.4.0(vue@3.5.43))(vue@3.5.43))(vue@3.5.43):
+  miuix-vue@0.1.1(motion-v@2.5.0(@vueuse/core@14.4.0(vue@3.5.43))(vue@3.5.43))(vue@3.5.43):
     dependencies:
-      motion-v: 2.4.4(@vueuse/core@14.4.0(vue@3.5.43))(vue@3.5.43)
+      motion-v: 2.5.0(@vueuse/core@14.4.0(vue@3.5.43))(vue@3.5.43)
       vue: 3.5.43
 
   motion-dom@13.3.0:
@@ -1168,7 +1168,7 @@ snapshots:
 
   motion-utils@13.3.0: {}
 
-  motion-v@2.4.4(@vueuse/core@14.4.0(vue@3.5.43))(vue@3.5.43):
+  motion-v@2.5.0(@vueuse/core@14.4.0(vue@3.5.43))(vue@3.5.43):
     dependencies:
       '@vueuse/core': 14.4.0(vue@3.5.43)
       framer-motion: 13.4.0
