@@ -37,6 +37,17 @@ test('disabled by default: no host stylesheet or generated override', async () =
   assert.equal(state.classes.has('m-theme-monet'), false)
 })
 
+for (const saved of [1, 0, 'true', 'false', null]) {
+  test(`non-boolean saved value ${JSON.stringify(saved)} cannot show Monet as enabled`, async () => {
+    const state = await setup(saved)
+    assert.equal(state.monetEnabled.value, false)
+    assert.equal(state.elements.length, 0)
+    assert.equal(state.classes.has('m-theme-monet'), false)
+    await nextTick()
+    assert.equal(state.storage.get('monetEnabled'), 'false')
+  })
+}
+
 test('restore saved preference, persist changes, and remove the override when disabled', async () => {
   const state = await setup(true)
   assert.equal(state.elements[0].href, 'https://mui.kernelsu.org/internal/colors.css')

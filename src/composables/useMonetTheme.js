@@ -2,6 +2,8 @@ import { watch } from 'vue'
 import { useStorage } from './useStorage.js'
 
 const monetEnabled = useStorage('monetEnabled', false)
+// 开关和初始化取色使用同一个严格布尔值；无效存储按默认关闭处理。
+monetEnabled.value = monetEnabled.value === true
 let palettesPromise
 let paletteStyle
 
