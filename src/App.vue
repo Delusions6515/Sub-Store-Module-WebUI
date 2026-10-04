@@ -12,12 +12,14 @@ import {
 import { GridView, Update, Settings, Info } from 'miuix-vue/icons'
 import { MODULE_VERSION, requestFullScreen } from './api/module'
 import { useStoredTheme } from './composables/useStoredTheme'
+import { useMonetTheme } from './composables/useMonetTheme'
 
 // 顶栏副标题：模块版本号（module.prop 的 version）
 const subtitle = MODULE_VERSION ? `v${MODULE_VERSION}` : ''
 
 // 主题持久化：恢复上次选择并持续写回（useStoredTheme 是模块级单例，此处调用保证初始化）
 useStoredTheme()
+useMonetTheme()
 
 // 页面仅在对应 tab 首次打开时下载，避免配置编辑器的 CodeMirror 进入首屏包。
 const pages = [

@@ -12,12 +12,14 @@ import {
 } from 'miuix-vue'
 import { useModuleState } from '../composables/useModuleState'
 import { useStoredTheme } from '../composables/useStoredTheme'
+import { useMonetTheme } from '../composables/useMonetTheme'
 import * as moduleApi from '../api/module'
 
 const { status, busy, refreshStatus, runAction } = useModuleState()
 
 // 主题：跟随系统 / 浅色 / 深色（对应 miuix example SettingsPage 的 Color Mode），选择持久化。
 const { mode, setThemeMode } = useStoredTheme()
+const { monetEnabled } = useMonetTheme()
 const colorModes = ['system', 'light', 'dark']
 const colorModeItems = ['跟随系统', '浅色', '深色']
 const colorMode = computed({
@@ -63,6 +65,11 @@ watch(tab, (value) => {
           v-model="colorMode"
           title="主题"
           :items="colorModeItems"
+        />
+        <MiuixSwitchPreference
+          v-model="monetEnabled"
+          title="Monet 取色"
+          summary="从宿主配色生成明暗主题；取色不可用时保持原配色"
         />
       </MiuixCard>
 
