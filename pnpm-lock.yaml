@@ -31,10 +31,10 @@ importers:
         version: 3.0.2
       miuix-vue:
         specifier: ^0.1.1
-        version: 0.1.1(motion-v@2.7.0(@vueuse/core@14.4.0(vue@3.5.44))(vue@3.5.44))(vue@3.5.44)
+        version: 0.1.1(motion-v@2.8.0(@vueuse/core@14.4.0(vue@3.5.44))(vue@3.5.44))(vue@3.5.44)
       motion-v:
-        specifier: ^2.7.0
-        version: 2.7.0(@vueuse/core@14.4.0(vue@3.5.44))(vue@3.5.44)
+        specifier: ^2.8.0
+        version: 2.8.0(@vueuse/core@14.4.0(vue@3.5.44))(vue@3.5.44)
       subsetted-fonts:
         specifier: 1.0.5
         version: 1.0.5
@@ -401,8 +401,8 @@ packages:
       picomatch:
         optional: true
 
-  framer-motion@14.1.0:
-    resolution: {integrity: sha512-QsdZSdWoyQfUmgi+GZfow8Du5COG6VRYEo9FlgKUPgH87/Le/fYekHCAKwLdYKHdCZcZfWHg4iOxlD6RoqXciQ==}
+  framer-motion@14.3.0:
+    resolution: {integrity: sha512-d8WCrU0ZQn7ukKMykCsDyIOwb/taZeDqqrDBK0du5GO0AO/ynz8fdR/LIIz9Pyy3n3tGwrneR+n0egyrrLa3fw==}
     peerDependencies:
       react: ^18.0.0 || ^19.0.0
       react-dom: ^18.0.0 || ^19.0.0
@@ -522,14 +522,14 @@ packages:
       motion-v: ^2.0.0
       vue: ^3.4.0
 
-  motion-dom@14.1.0:
-    resolution: {integrity: sha512-FyFLkNUAAETzCvf851mZcl+v+kaZrKq+UM+XmkY4G8n+ny/WYfiWh9j0fhSQ1KOKVQrM9/cLO11THO2k71HJlg==}
+  motion-dom@14.3.0:
+    resolution: {integrity: sha512-rcKO4aEJzAqDEsrH6qFzhLZxs7bNqZpiUEuEATz9LaRwt6dG7hZEbcFUSHNR8NECaKYM0Iuw6Iv6NpWEGXDI+w==}
 
-  motion-utils@14.1.0:
-    resolution: {integrity: sha512-xd4FeWOnnXsJHmAaRCLNbOS7mEaNOangjMt3Pl241H07f1kxW48fADQ/8O5hLLNhf1qdlozgY3PPAHBdOoU7AA==}
+  motion-utils@14.1.1:
+    resolution: {integrity: sha512-3VvN5Uvf8B6qG+OfOui6Nht5EWp+vLuU3IqcAj7ItZGKqtmTjCebl5sGZF7/08gEHRnEl1AP/fIwbcEyVrcQGQ==}
 
-  motion-v@2.7.0:
-    resolution: {integrity: sha512-/14UHEVFe+ms0As46tArqhVjB4r6cFgIxmvx0qsYwhRoXWeCcvP/KKlLBC6MX0uUJqS73sDa3Jt/DbC/S+nUvg==}
+  motion-v@2.8.0:
+    resolution: {integrity: sha512-kCwxm+EUbXW/lUdhTyozTKCX2WmQ5aDrjrPtFnUKByw99cz6mQAJyqtIubGdecnDM4VvNz8JOhWy2upp3m5b3w==}
     peerDependencies:
       '@vueuse/core': '>=10.0.0'
       vue: '>=3.0.0'
@@ -1093,10 +1093,10 @@ snapshots:
     optionalDependencies:
       picomatch: 4.0.7
 
-  framer-motion@14.1.0:
+  framer-motion@14.3.0:
     dependencies:
-      motion-dom: 14.1.0
-      motion-utils: 14.1.0
+      motion-dom: 14.3.0
+      motion-utils: 14.1.1
       tslib: 2.8.1
 
   fsevents@2.3.3:
@@ -1171,24 +1171,24 @@ snapshots:
     dependencies:
       '@jridgewell/sourcemap-codec': 1.6.0
 
-  miuix-vue@0.1.1(motion-v@2.7.0(@vueuse/core@14.4.0(vue@3.5.44))(vue@3.5.44))(vue@3.5.44):
+  miuix-vue@0.1.1(motion-v@2.8.0(@vueuse/core@14.4.0(vue@3.5.44))(vue@3.5.44))(vue@3.5.44):
     dependencies:
-      motion-v: 2.7.0(@vueuse/core@14.4.0(vue@3.5.44))(vue@3.5.44)
+      motion-v: 2.8.0(@vueuse/core@14.4.0(vue@3.5.44))(vue@3.5.44)
       vue: 3.5.44
 
-  motion-dom@14.1.0:
+  motion-dom@14.3.0:
     dependencies:
-      motion-utils: 14.1.0
+      motion-utils: 14.1.1
 
-  motion-utils@14.1.0: {}
+  motion-utils@14.1.1: {}
 
-  motion-v@2.7.0(@vueuse/core@14.4.0(vue@3.5.44))(vue@3.5.44):
+  motion-v@2.8.0(@vueuse/core@14.4.0(vue@3.5.44))(vue@3.5.44):
     dependencies:
       '@vueuse/core': 14.4.0(vue@3.5.44)
-      framer-motion: 14.1.0
+      framer-motion: 14.3.0
       hey-listen: 1.0.8
-      motion-dom: 14.1.0
-      motion-utils: 14.1.0
+      motion-dom: 14.3.0
+      motion-utils: 14.1.1
       vue: 3.5.44
     transitivePeerDependencies:
       - react
